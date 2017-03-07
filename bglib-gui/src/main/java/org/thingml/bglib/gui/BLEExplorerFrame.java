@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.thingml.bglib.BDAddr;
 import org.thingml.bglib.BGAPITransport;
+import org.thingml.bglib.ProtocolLogger;
 import org.thingml.bglib.BGAPI;
 import org.thingml.bglib.BGAPIListener;
 import org.thingml.bglib.BGAPIPacketLogger;
@@ -299,11 +300,11 @@ public class BLEExplorerFrame extends javax.swing.JFrame implements BGAPIListene
             try {
                 jTextFieldBLED112.setText("Connected on " + port);
                 bgapi = new BGAPI(new BGAPITransport(port.getInputStream(), port.getOutputStream()));
+                if (jCheckBoxDebug.isSelected()) bgapi.addListener(logger);
                 bgapi.addListener(this);
                 Thread.sleep(250);
                 bgapi.send_system_get_info();
                 jButtonBLED112Disc.setEnabled(true);
-                if (jCheckBoxDebug.isSelected()) bgapi.getLowLevelDriver().addListener(logger);
                 
             } catch (Exception ex) {
                 Logger.getLogger(BLEExplorerFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -324,7 +325,7 @@ public class BLEExplorerFrame extends javax.swing.JFrame implements BGAPIListene
         
         if (bgapi != null) {
             bgapi.removeListener(this);
-            bgapi.getLowLevelDriver().removeListener(logger);
+            bgapi.removeListener(logger);
             bgapi.send_system_reset(0);
             bgapi.disconnect();
         }
@@ -397,16 +398,16 @@ public class BLEExplorerFrame extends javax.swing.JFrame implements BGAPIListene
         bgapi.send_attclient_read_by_handle(connection, 0x24);
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private BGAPIPacketLogger logger = new BGAPIPacketLogger();
+    private BGAPIListener logger = new ProtocolLogger();
     
     private void jCheckBoxDebugActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxDebugActionPerformed
         
         if (bgapi == null) return;
         if (jCheckBoxDebug.isSelected()) {
-            bgapi.getLowLevelDriver().addListener(logger);
+            bgapi.addListener(logger);
         }
         else {
-            bgapi.getLowLevelDriver().removeListener(logger);
+            bgapi.removeListener(logger);
         }
     }//GEN-LAST:event_jCheckBoxDebugActionPerformed
 
