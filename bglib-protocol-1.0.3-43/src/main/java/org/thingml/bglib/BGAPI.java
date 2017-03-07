@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class BGAPI implements BGAPITransportListener {
     
-    protected BGAPITransport bgapi;
+    private final BGAPITransport bgapi;
     
     public BGAPI(BGAPITransport bgapi) {
         this.bgapi = bgapi;
@@ -40,7 +40,7 @@ public class BGAPI implements BGAPITransportListener {
         bgapi.stop();
     }
     
-    public List<BGAPIListener> listeners = new CopyOnWriteArrayList<BGAPIListener>();
+    private final List<BGAPIListener> listeners = new CopyOnWriteArrayList<BGAPIListener>();
     public void addListener(BGAPIListener l) {
         //System.out.print("BGAPI.addListener ...");
         listeners.add(l);
@@ -1882,6 +1882,4 @@ public class BGAPI implements BGAPITransportListener {
 		BGAPIPacket p = new BGAPIPacket(0, 8, 4);
 		bgapi.sendPacket(p);
 	}
-
-    
 }

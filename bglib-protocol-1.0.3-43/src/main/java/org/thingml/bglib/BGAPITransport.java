@@ -32,8 +32,7 @@ import java.util.logging.Logger;
  */
 public class BGAPITransport implements Runnable {
     
-    //protected ArrayList<BGAPITransportListener> listeners = new ArrayList<BGAPITransportListener>();
-    protected List<BGAPITransportListener> listeners = new CopyOnWriteArrayList<BGAPITransportListener>();
+    private final List<BGAPITransportListener> listeners = new CopyOnWriteArrayList<BGAPITransportListener>();
     public void addListener(BGAPITransportListener l) {
         listeners.add(l);
     }
@@ -41,10 +40,10 @@ public class BGAPITransport implements Runnable {
         listeners.remove(l);
     }
     
-    protected InputStream in;
-    protected OutputStream out;
+    private final InputStream in;
+    private final OutputStream out;
     
-    private Thread rxthread = null;
+    private final Thread rxthread;
     
     private long receivedBytes = 0;
 
@@ -70,7 +69,6 @@ public class BGAPITransport implements Runnable {
         while(iter.hasNext()) {
             ((BGAPITransportListener)(iter.next())).packetSent(p);
         }
-        //for(BGAPITransportListener l : listeners) l.packetSent(p);
     }
     
     
@@ -122,7 +120,6 @@ public class BGAPITransport implements Runnable {
                                             while(iter.hasNext()) {
                                                 ((BGAPITransportListener)(iter.next())).packetReceived(p);
                                             }
-                                            //for (BGAPITransportListener l : listeners) l.packetReceived(p);
                                             p = null;
                                     }
                             }
@@ -136,7 +133,6 @@ public class BGAPITransport implements Runnable {
                                     while(iter.hasNext()) {
                                         ((BGAPITransportListener)(iter.next())).packetReceived(p);
                                     }
-                                    //for (BGAPITransportListener l : listeners) l.packetReceived(p);
                                     p = null;
                             }
                     }

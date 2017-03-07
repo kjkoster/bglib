@@ -28,8 +28,8 @@ import org.thingml.bglib.BGAPI;
 public class AttributeFrame extends javax.swing.JFrame {
 
     
-    private BGAPI bgapi;
-    private int connection;
+    private final BGAPI bgapi;
+    private final int connection;
     
     /**
      * Creates new form AttributeFrame

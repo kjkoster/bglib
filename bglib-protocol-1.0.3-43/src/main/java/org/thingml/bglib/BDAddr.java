@@ -20,7 +20,6 @@ package org.thingml.bglib;
  * @author Franck FLEUREY (SINTEF)
  */
 public class BDAddr {
-   
     public static BDAddr fromString(String addr) {
         String[] bytes = addr.split(":");
         if (bytes.length != 6) {
@@ -33,14 +32,22 @@ public class BDAddr {
         return new BDAddr(byte_addr);
     }
     
-    protected byte[] byte_addr;
-    
-    public byte[] getByteAddr() {
-        return byte_addr;
+    public BDAddr(byte[] addr) {
+        // copy the bytes to ensure immutability
+        for (int i = 0; i < 6; i++) {
+            byte_addr[i] = addr[i];
+        }
     }
     
-    public BDAddr(byte[] addr) {
-        byte_addr = addr;
+    private final byte[] byte_addr = new byte[6];
+    
+    public byte[] getByteAddr() {
+        // copy the bytes to ensure immutability
+        final byte[] mac = new byte[6];
+        for (int i = 0; i < 6; i++) {
+            mac[i] = byte_addr[i];
+        }
+        return mac;
     }
     
     public String toString() {
@@ -51,5 +58,4 @@ public class BDAddr {
         }
         return result.toString();
     }
-    
 }

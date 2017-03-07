@@ -36,10 +36,10 @@ import org.thingml.bglib.BGAPIPacketLogger;
  */
 public class BLEExplorerFrame extends javax.swing.JFrame implements BGAPIListener {
 
-    protected BGAPI bgapi;
-    protected SerialPort port;
+    private BGAPI bgapi;
+    private SerialPort port;
     
-    protected BLEDeviceList devList = new BLEDeviceList();
+    private final BLEDeviceList devList = new BLEDeviceList();
     
     /**
      * Creates new form BLEExplorerFrame
