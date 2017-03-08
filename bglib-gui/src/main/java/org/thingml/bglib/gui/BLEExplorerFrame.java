@@ -28,7 +28,6 @@ import org.thingml.bglib.BGAPITransport;
 import org.thingml.bglib.ProtocolLogger;
 import org.thingml.bglib.BGAPI;
 import org.thingml.bglib.BGAPIListener;
-import org.thingml.bglib.BGAPIPacketLogger;
 
 /**
  *
@@ -143,6 +142,7 @@ public class BLEExplorerFrame extends javax.swing.JFrame implements BGAPIListene
         });
 
         jButtonDisconnect.setText("Disconnect");
+        jButtonDisconnect.setEnabled(false);
         jButtonDisconnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonDisconnectActionPerformed(evt);
@@ -295,7 +295,7 @@ public class BLEExplorerFrame extends javax.swing.JFrame implements BGAPIListene
     private void jButtonBLED112ConnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBLED112ConnActionPerformed
         jButtonBLED112Conn.setEnabled(false);
         jButtonBLED112Disc.setEnabled(false);
-        port  = BLED112.connectSerial(BLED112.selectSerialPort());
+        port = BLED112.connectSerial(BLED112.selectSerialPort());
         if (port != null) {
             try {
                 jTextFieldBLED112.setText("Connected on " + port);
@@ -370,7 +370,7 @@ public class BLEExplorerFrame extends javax.swing.JFrame implements BGAPIListene
         if (connection >= 0) {
             bgapi.send_connection_disconnect(connection);
         }
-        jTextFieldConnStatus.setText("Diconnected.");
+        jTextFieldConnStatus.setText("Disconnected.");
         jButtonConnect.setEnabled(true);
         jButtonDisconnect.setEnabled(false);
 
@@ -378,10 +378,14 @@ public class BLEExplorerFrame extends javax.swing.JFrame implements BGAPIListene
 
     private void jButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRefreshActionPerformed
         if (connection < 0) {
-            
+            jButtonConnect.setEnabled(true);
+            jButtonDisconnect.setEnabled(false);
             jTextFieldConnStatus.setText("Not Connected.");
         }
         else {
+            jButtonConnect.setEnabled(false);
+            jButtonDisconnect.setEnabled(true);
+            jTextFieldConnStatus.setText("Getting connection status...");
             bgapi.send_connection_get_status(connection);
         }
     }//GEN-LAST:event_jButtonRefreshActionPerformed
@@ -515,8 +519,9 @@ public class BLEExplorerFrame extends javax.swing.JFrame implements BGAPIListene
 	public void receive_connection_get_status(int connection) {}
 	public void receive_connection_raw_tx(int connection) {}
 	
-        protected int connection = -1;
-        protected BLEDevice bledevice = null;
+    private int connection = -1;
+    private BLEDevice bledevice = null;
+        
         public void receive_connection_status(int conn, int flags, BDAddr address, int address_type, int conn_interval, int timeout, int latency, int bonding) {
             jTextFieldConnStatus.setText("[" + address.toString() + "] Conn = " + conn + " Flags = " + flags);
             if (flags != 0) {
@@ -536,7 +541,15 @@ public class BLEExplorerFrame extends javax.swing.JFrame implements BGAPIListene
 	public void receive_connection_version_ind(int connection, int vers_nr, int comp_id, int sub_vers_nr) {}
 	public void receive_connection_feature_ind(int connection, byte[] features) {}
 	public void receive_connection_raw_rx(int connection, byte[] data) {}
-	public void receive_connection_disconnected(int connection, int reason) {}
+	public void receive_connection_disconnected(int connection, int reason) {
+        jTextFieldConnStatus.setText(
+                String.format("Connection lost because 0x%04x", reason));
+
+        bledevice = null;
+        connection = -1;
+        jButtonConnect.setEnabled(true);
+        jButtonDisconnect.setEnabled(false);
+	}
 
 	// Callbacks for class attclient (index = 4)
 	public void receive_attclient_find_by_type_value(int connection, int result) {}
